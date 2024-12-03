@@ -144,8 +144,7 @@ async function getDefaultQuiz() {
   };
 }
 
-const openAIApiKey =
-  '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'; // default project
+const openAIApiKey = ''; // INSERT OPENAI APIKEY HERE
 const endpoint = 'https://api.openai.com/v1/chat/completions';
 
 async function checkAnswerWithOpenAI(mainIdea, keyDetails, userInput) {
