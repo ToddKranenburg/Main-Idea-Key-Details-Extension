@@ -4,7 +4,7 @@ import { marked } from 'marked';
 // The underlying model has a context of 1,024 tokens, out of which 26 are used by the internal prompt,
 // leaving about 998 tokens for the input text. Each token corresponds, roughly, to about 4 characters, so 4,000
 // is used as a limit to warn the user the content might be too long to summarize.
-const MAX_MODEL_CHARS = 40000;
+const MAX_MODEL_CHARS = 400000;
 console.log('loaded index.js');
 
 // let pageContent = '';
@@ -142,11 +142,11 @@ const endpoint = 'https://api.openai.com/v1/chat/completions';
 async function checkAnswerWithOpenAI(mainIdea, keyDetails, userInput) {
   try {
     const prompt = `
-    You are an assistant that checks user-submitted inputs to see if they correctly guess the main idea and/or key details of a given article. You have two main tasks:
+    You are an assistant that checks user-submitted inputs to see if they correctly remember the main idea and/or key details of a given article. You have two main tasks:
 
-    1. Determine whether or not the answer effectively captures the main idea of the article. Just a true/false.
+    1. Determine whether or not the answer demonstrates that the user understands the main idea of the article. Just a true/false. It's fine if the user's input is a bit vague, as long as it is clear that they understood and remember then it should be a match
 
-    2. List correctly identified key details. Each key detail is assigned an index. Your job is to return a list of indices for the key details identified in the user input. If no matches are found, return an empty list.
+    2. List correctly identified key details. If the input demonstrates that the user effectively remembers the detail, enough so to describe it succinctly at a cocktail party and be clear and convincing, it should count as a match. Each key detail is assigned an index. Your job is to return a list of indices for the key details identified in the user's input. If no matches are found, return an empty list.
 
     Here is the informaiton on the article:
 
@@ -200,18 +200,20 @@ async function checkAnswerWithOpenAI(mainIdea, keyDetails, userInput) {
 async function getQuizFromOpenAI(content) {
   try {
     const systemPrompt = `
-     You are an assistant that summarizes articles into a **main idea** and **key details** for quizzes and comprehension. Your task is to analyze the content and provide clear, structured, and concise outputs.
+     You are an assistant that helps readers remember the things they learn in the articles they read. To do so, your task is to identify the **main idea** and **key details** that are most important for a reader to remember in the text.
 
-      1. **Main Idea**: the central thesis or primary argument of the article. This should summarize the article's purpose and avoid unnecessary details.
+      1. **Main Idea**: the main takeaway that readers should have from the article. focus on the primary piece of new insight, information, perspective, etc that the author intended the reader to come away with. This should be what a reader might say when they describe what they learned from the article to someone at a dinner party.
 
-      2. **Key details**: Provide up to 5 key details that support the main idea. Each key detail should:
+      2. **Key details**: these are the specifics within the article that support the main idea. Think of them as evidence, or sometimes like logical steps in an argument. Or you can think of them like the specific things that a reader might want to mention to explain more on what they learned from the article at a dinner party. Each detail should:
         - Be concise
-        - Include specific details, examples, or concepts from the article when possible.
+        - Include relevant details from the article that support the main idea.
         - Avoid generalizations, redundancies, or overly broad statements.
+        - Point to specific and most convincing evidence
+        - Represent likely new information for the reader
 
       If the article does not include enough material for 5 key details, provide only the relevant ones.
-      Focus on clarity, specificity, and utility for readers who want to understand and retain the content.
-      You do not need to write in perfect, complete sentences.
+      Focus on clarity, specificity, and utility for adult, educated readers who want to understand and retain the content.
+      You do not need to write in perfect, complete sentences. 
 
       Return the response in JSON format, structured as follows:
       {
