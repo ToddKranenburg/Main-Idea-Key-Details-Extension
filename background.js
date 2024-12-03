@@ -5,9 +5,9 @@ chrome.sidePanel
 chrome.tabs.onActivated.addListener((activeInfo) => {
   loadPageContent(activeInfo.tabId);
 });
-// chrome.tabs.onUpdated.addListener(async (tabId) => {
-//   loadSummary(tabId);
-// });
+chrome.tabs.onUpdated.addListener(async (tabId) => {
+  loadPageContent(tabId);
+});
 
 async function loadPageContent(tabId) {
   console.log('Flag: initiate load content for tab:', tabId);

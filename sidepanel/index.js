@@ -10,7 +10,17 @@ console.log('loaded index.js');
 // let pageContent = '';
 
 const generateQuizButton = document.querySelector('#generate');
-generateQuizButton.addEventListener('click', onGenerateQuiz);
+generateQuizButton.addEventListener('click', generateQuiz);
+
+const revealButton = document.getElementById('reveal-answers');
+revealButton.addEventListener('click', revealAnswers);
+
+async function revealAnswers() {
+  showMainIdea();
+  await chrome.storage.session.get('keyDetails', async ({ mainIdea, keyDetails }) => {
+    keyDetails.forEach((_, i) => showKeyDetail(i));
+  });
+};
 
 const keyDetailsElement = document.body.querySelector('#key-details-content');
 const mainIdeaElement = document.body.querySelector('#main-idea-content');
@@ -49,7 +59,6 @@ async function handleQuizResponse() {
           feedbackElement.textContent = 'No matches';
           feedbackElement.style.display = 'block';
         } else {
-          feedbackElement.textContent = 'No matches';
           feedbackElement.style.display = 'none';
         }
       }
@@ -82,7 +91,7 @@ async function showMainIdea() {
 // Trigger action when the button is clicked
 submitButton.addEventListener('click', handleQuizResponse);
 
-async function onGenerateQuiz() {
+async function generateQuiz() {
   console.log('generating quiz');
   // const { mainIdea, keyDetails } = await getDefaultQuiz();
   chrome.storage.session.get('pageContent', async ({ pageContent }) => {

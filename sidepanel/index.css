@@ -146,3 +146,21 @@ h2 {
   background-color: #d1ecf1;
   border: 1px solid #bee5eb;
 }
+
+.reveal-button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #f39c12;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: center;
+}
+
+.reveal-button:hover {
+  background-color: #e67e22;
+}
