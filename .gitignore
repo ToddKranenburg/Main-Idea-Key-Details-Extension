@@ -1,1 +1,21 @@
-dist
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Node.js dependencies (if applicable)
+node_modules/
+
+# Environment files
+.env
+
+# Build outputs
+dist/
+build/
+
+# Editor-specific
+.vscode/
+.idea/
+*.swp
+
+# Sensitive files
+*.pem
