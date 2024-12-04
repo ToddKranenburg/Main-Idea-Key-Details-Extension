@@ -3,9 +3,8 @@ import { marked } from 'marked';
 
 import { OPEN_AI_API_KEY, OPEN_AI_ENDPOINT } from '../config.js';
 
-// The underlying model has a context of 1,024 tokens, out of which 26 are used by the internal prompt,
-// leaving about 998 tokens for the input text. Each token corresponds, roughly, to about 4 characters, so 4,000
-// is used as a limit to warn the user the content might be too long to summarize.
+// Each token corresponds, roughly, to about 4 characters, so 40,000
+// is used as a limit to warn the user the content might be too long
 const MAX_MODEL_CHARS = 400000;
 console.log('loaded index.js');
 
@@ -87,18 +86,15 @@ async function showMainIdea() {
 submitButton.addEventListener('click', handleQuizResponse);
 
 async function generateQuiz() {
-  console.log('generating quiz');
-  // const { mainIdea, keyDetails } = await getDefaultQuiz();
   chrome.storage.session.get('pageContent', async ({ pageContent }) => {
-    console.log('page content...');
-    console.log(pageContent);
     if (pageContent.length > MAX_MODEL_CHARS) {
       // updateWarning(
       //   `Text is too long for summarization with ${pageContent.length} characters (maximum supported content length is ~${MAX_MODEL_CHARS} characters).`
       // );
     } else {
-      const { mainIdea, keyDetails } = await getQuizFromOpenAI(pageContent);
       mainIdeaElement.textContent = '?';
+      keyDetailsElement.innerHTML = '';
+      const { mainIdea, keyDetails } = await getQuizFromOpenAI(pageContent);
       // mainIdeaElement.innerHTML = DOMPurify.sanitize(marked.parse(mainIdea));
       keyDetails.forEach((_, index) => {
         const li = document.createElement('li');
