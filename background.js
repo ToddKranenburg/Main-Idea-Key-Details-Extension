@@ -5,12 +5,14 @@ chrome.sidePanel
 chrome.tabs.onActivated.addListener((activeInfo) => {
   loadPageContent(activeInfo.tabId);
 });
-chrome.tabs.onUpdated.addListener(async (tabId) => {
-  loadPageContent(tabId);
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  if (changeInfo.status == 'complete' && tab.active) {
+    loadPageContent(tabId);
+  }
 });
 
 async function loadPageContent(tabId) {
-  console.log('Flag: initiate load content for tab:', tabId);
+  console.log('Flag: initiate load content for tab', tabId);
 
   try {
     const tab = await chrome.tabs.get(tabId);
@@ -29,8 +31,6 @@ async function loadPageContent(tabId) {
       console.error('No content extracted from the page.');
       return;
     }
-
-    console.log('Extracted content:', content);
 
     // Store the content
     await chrome.storage.session.set({ pageContent: content });

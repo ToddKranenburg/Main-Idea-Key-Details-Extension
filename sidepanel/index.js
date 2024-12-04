@@ -1,6 +1,8 @@
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
 
+import { OPEN_AI_API_KEY, OPEN_AI_ENDPOINT } from '../config.js';
+
 // The underlying model has a context of 1,024 tokens, out of which 26 are used by the internal prompt,
 // leaving about 998 tokens for the input text. Each token corresponds, roughly, to about 4 characters, so 4,000
 // is used as a limit to warn the user the content might be too long to summarize.
@@ -68,13 +70,6 @@ async function handleQuizResponse() {
   }
 }
 
-let n = 0;
-// async function checkAnswer(_) {
-//   const i = n;
-//   n = n + 1;
-//   return { isMainIdea: false, identifiedKeyDetailIndices: [i] };
-// }
-
 async function showKeyDetail(index) {
   const keyDetailElement = document.getElementById(`key-detail-${index}`);
   await chrome.storage.session.get('keyDetails', async ({ keyDetails }) => {
@@ -121,31 +116,6 @@ async function generateQuiz() {
   });
 }
 
-// function onConfigChange() {
-//   const oldContent = pageContent;
-//   pageContent = '';
-//   onContentChange(oldContent);
-// }
-
-// [summaryTypeSelect, summaryFormatSelect, summaryLengthSelect].forEach((e) =>
-//   e.addEventListener('change', onConfigChange)
-// );
-
-async function getDefaultQuiz() {
-  return {
-    mainIdea: `Budapest's strategic location at the intersection of key geographical features, such as the Danube River, hills, and fertile plains, shaped its historical development as a capital city and global metropolis.`,
-    keyDetails: [
-      `Budapest was formed by the merger of Buda and Pest, which were initially separate due to their distinct geographical and strategic advantages.`,
-      `The city's location on the Danube River provided access to trade, water, and natural defenses, making it a crucial point for the Roman Empire's frontier defense.`,
-      `Historically, Budapest thrived as a global metropolis due to factors like its strategic positioning in the Pannonian Basin, the natural border of the Danube River, and the presence of thermal springs.`,
-      `The city's growth and decline were influenced by various events, such as the Mongol invasion, Ottoman conquest, industrial revolution, and political upheavals like WWI and WWII.`,
-      `Today, Budapest is focused on revitalizing its historic glory by balancing its imperial past with modern developments, making it a vibrant city with a promising future.`
-    ]
-  };
-}
-
-const openAIApiKey = ''; // INSERT OPENAI APIKEY HERE
-const endpoint = 'https://api.openai.com/v1/chat/completions';
 
 async function checkAnswerWithOpenAI(mainIdea, keyDetails, userInput) {
   try {
@@ -174,11 +144,11 @@ async function checkAnswerWithOpenAI(mainIdea, keyDetails, userInput) {
     }.
     `;
     console.log('prompt: ', prompt);
-    const response = await fetch(endpoint, {
+    const response = await fetch(OPEN_AI_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${openAIApiKey}`
+        Authorization: `Bearer ${OPEN_AI_API_KEY}`
       },
       body: JSON.stringify({
         model: 'gpt-3.5-turbo',
@@ -230,11 +200,11 @@ async function getQuizFromOpenAI(content) {
       }.
       Make the key details as concise and specific as possible.
       `;
-    const response = await fetch(endpoint, {
+    const response = await fetch(OPEN_AI_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${openAIApiKey}`
+        Authorization: `Bearer ${OPEN_AI_API_KEY}`
       },
       body: JSON.stringify({
         model: 'gpt-3.5-turbo',
@@ -259,19 +229,3 @@ async function getQuizFromOpenAI(content) {
     return 'Error: Unable to connect to OpenAI.';
   }
 }
-
-// async function showQuiz(quizContent) {
-//   console.log(quizContent);
-//   mainIdeaElement.innerHTML = DOMPurify.sanitize(marked.parse(quizContent.mainIdea));
-//   quizContent.keyDetails.forEach((keyPoint, n) => keyDetailsElements[n].innerHTML = DOMPurify.sanitize(marked.parse(keyPoint)))
-//   // quizElement.innerHTML = DOMPurify.sanitize(marked.parse(text));
-// }
-
-// async function updateWarning(warning) {
-//   warningElement.textContent = warning;
-//   if (warning) {
-//     warningElement.removeAttribute('hidden');
-//   } else {
-//     warningElement.setAttribute('hidden', '');
-//   }
-// }
