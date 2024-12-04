@@ -13,8 +13,11 @@ console.log('loaded index.js');
 const generateQuizButton = document.querySelector('#generate');
 generateQuizButton.addEventListener('click', generateQuiz);
 
-const revealButton = document.getElementById('reveal-answers');
+const revealButton = document.querySelector('#reveal-answers');
 revealButton.addEventListener('click', revealAnswers);
+
+const quizContainer = document.querySelector('#quiz-container');
+
 
 async function revealAnswers() {
   showMainIdea();
@@ -92,10 +95,12 @@ async function generateQuiz() {
       //   `Text is too long for summarization with ${pageContent.length} characters (maximum supported content length is ~${MAX_MODEL_CHARS} characters).`
       // );
     } else {
+      quizContainer.classList.remove('loaded');
+      quizContainer.classList.add('loading');
+
+      const { mainIdea, keyDetails } = await getQuizFromOpenAI(DOMPurify.sanitize(marked.parse(pageContent)));
       mainIdeaElement.textContent = '?';
       keyDetailsElement.innerHTML = '';
-      const { mainIdea, keyDetails } = await getQuizFromOpenAI(pageContent);
-      // mainIdeaElement.innerHTML = DOMPurify.sanitize(marked.parse(mainIdea));
       keyDetails.forEach((_, index) => {
         const li = document.createElement('li');
         li.id = `key-detail-${index}`;
@@ -103,6 +108,9 @@ async function generateQuiz() {
         li.textContent = '?';
         keyDetailsElement.appendChild(li);
       });
+
+      quizContainer.classList.remove('loading');
+      quizContainer.classList.add('loaded')
 
       await chrome.storage.session.set({
         mainIdea: mainIdea,

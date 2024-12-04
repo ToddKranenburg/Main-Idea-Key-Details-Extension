@@ -89,15 +89,6 @@ fieldset > * {
   background-color: #2980b9;
 }
 
-.quiz-container {
-  max-width: 800px;
-  margin: auto;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-}
-
 .key-details {
   list-style-type: none;
   padding: 0;
@@ -163,4 +154,76 @@ h2 {
 
 .reveal-button:hover {
   background-color: #e67e22;
+}
+
+/* Loader (Bouncing Dots) */
+.dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.dots span {
+  width: 10px;
+  height: 10px;
+  background-color: #3498db;
+  border-radius: 50%;
+  animation: bounce 0.6s infinite;
+}
+
+.dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+/* Quiz Container Styling */
+.quiz-container {
+  max-width: 800px;
+  margin: auto;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  position: relative;
+}
+
+.dots {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  visibility: visible; /* Ensure it's on top while loading */
+}
+
+.key-details-section,
+.main-idea-section,
+.reveal-button,
+.dots {
+  opacity: 0; /* Hide content while loading */
+  transition: opacity 0.3s ease-in-out;
+}
+
+.quiz-container.loading .dots {
+  opacity: 1; /* Show content while loading */
+}
+
+.quiz-container.loaded .key-details-section,
+.quiz-container.loaded .main-idea-section,
+.quiz-container.loaded .reveal-button {
+  opacity: 1; /* Show content when loaded */
 }
