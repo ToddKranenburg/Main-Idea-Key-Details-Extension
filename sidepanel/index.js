@@ -17,6 +17,7 @@ const revealButton = document.querySelector('#reveal-answers');
 revealButton.addEventListener('click', revealAnswers);
 
 const quizContainer = document.querySelector('#quiz-container');
+const quizIntro = document.querySelector('#quiz-introduction-default');
 
 
 async function revealAnswers() {
@@ -97,6 +98,7 @@ async function generateQuiz() {
     } else {
       quizContainer.classList.remove('loaded');
       quizContainer.classList.add('loading');
+      quizIntro.classList.add('hidden');
 
       const { mainIdea, keyDetails } = await getQuizFromOpenAI(DOMPurify.sanitize(marked.parse(pageContent)));
       mainIdeaElement.textContent = '?';
@@ -110,7 +112,10 @@ async function generateQuiz() {
       });
 
       quizContainer.classList.remove('loading');
-      quizContainer.classList.add('loaded')
+
+      setTimeout(() => {
+        quizContainer.classList.add('loaded')
+      }, 500);
 
       await chrome.storage.session.set({
         mainIdea: mainIdea,

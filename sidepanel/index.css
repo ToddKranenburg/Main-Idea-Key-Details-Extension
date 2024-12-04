@@ -17,7 +17,7 @@ body {
   padding: 0 var(--size-3);
 }
 
-[hidden] {
+[hidden], .hidden {
   display: none !important;
 }
 
@@ -139,7 +139,7 @@ h2 {
 }
 
 .reveal-button {
-  display: block;
+  display: none;
   margin: 20px auto;
   padding: 10px 20px;
   font-size: 16px;
@@ -222,8 +222,17 @@ h2 {
   opacity: 1; /* Show content while loading */
 }
 
+.quiz-container.loading .quiz-intro,
+.quiz-container.loaded .quiz-intro {
+  display: none;
+}
+
 .quiz-container.loaded .key-details-section,
 .quiz-container.loaded .main-idea-section,
-.quiz-container.loaded .reveal-button {
+.quiz-intro {
   opacity: 1; /* Show content when loaded */
+}
+
+.quiz-container.loaded .reveal-button {
+  display: block;
 }
