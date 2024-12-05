@@ -43,21 +43,20 @@ inputField.addEventListener('keypress', async (event) => {
 
 // Function to handle quiz response submission
 async function handleQuizResponse() {
+  feedbackElement.textContent = '';
+  feedbackElement.style.display = 'none';
+  
   const userInput = inputField.value.trim();
   if (userInput) {
     console.log(`User response: ${userInput}`);
 
     await chrome.storage.session.get(
-      ['mainTakeaway', 'keyDetails'],
-      async ({ mainTakeaway, keyDetails }) => {
+      ['mainTakeaway', 'keyDetails', 'revealedIndices', 'revealedMainTakeaway'],
+      async ({ mainTakeaway, keyDetails, revealedIndices, revealedMainTakeaway }) => {
         const { isMainTakeaway, identifiedKeyDetailIndices, feedback } =
           await checkAnswerWithOpenAI(mainTakeaway, keyDetails, userInput);
-        if (isMainTakeaway) {
-          showMainTakeaway();
-        }
-        identifiedKeyDetailIndices.forEach((keyDetailIndex) =>
-          showKeyDetail(keyDetailIndex)
-        );
+        
+        let newAnswerFound = false;
 
         if (!isMainTakeaway & (identifiedKeyDetailIndices.length == 0)) {
           console.log('no matches');
@@ -65,7 +64,25 @@ async function handleQuizResponse() {
           feedbackElement.textContent = feedback;
           feedbackElement.style.display = 'block';
         } else {
-          feedbackElement.style.display = 'none';
+          if (isMainTakeaway && !revealedMainTakeaway) {
+            showMainTakeaway();
+            chrome.storage.session.set({ revealedMainTakeaway: true });
+            newAnswerFound = true;
+          }
+          identifiedKeyDetailIndices.forEach((keyDetailIndex) => {
+            if (!revealedIndices.includes(keyDetailIndex)) {
+              showKeyDetail(keyDetailIndex);
+              revealedIndices = revealedIndices + [keyDetailIndex];
+              chrome.storage.session.set({ revealedIndices: revealedIndices });
+              newAnswerFound = true;
+            }
+          });
+          if (newAnswerFound) {
+            feedbackElement.style.display = 'none';
+          } else {
+            feedbackElement.textContent = 'Already covered';
+            feedbackElement.style.display = 'block';
+          }
         }
       }
     );
@@ -77,7 +94,9 @@ async function handleQuizResponse() {
 async function showKeyDetail(index) {
   const keyDetailElement = document.getElementById(`key-detail-${index}`);
   await chrome.storage.session.get('keyDetails', async ({ keyDetails }) => {
+    const wasPreviouslyHidden = keyDetailElement.textContent == '?';
     keyDetailElement.textContent = keyDetails[index];
+    return wasPreviouslyHidden;
   });
 }
 
@@ -119,6 +138,7 @@ async function loadPageContent(tabId) {
 }
 
 async function generateQuiz() {
+  chrome.storage.session.set({ revealedIndices: [], revealedMainTakeaway: false });
   chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
     if (tabs.length > 0) {
       const activeTabId = tabs[0].id;
@@ -234,7 +254,7 @@ async function checkAnswerWithOpenAI(mainTakeaway, keyDetails, userInput) {
 
     2. List correctly identified key details. If the input demonstrates that the user effectively remembers the detail, enough so to describe it succinctly at a cocktail party and be clear and convincing, it should count as a match. Each key detail is assigned an index. Your job is to return a list of indices for the key details identified in the user's input. If no matches are found, return an empty list.
 
-    3. Give a very short, quippy, helpful piece of feedback that doesn't give away ANY information from the key details or main idea. Say no match and then just a few words of helpful feedback. Think like you're a teacher and your student is an adult. Not overly peppy. No need for full sentences.
+    3. Give a very short, quippy, helpful piece of feedback that doesn't give away ANY information from the key details or main Takeaway. Say no match and then just a few words of helpful feedback. Think like you're a teacher and your student is an adult. Not overly peppy. No need for full sentences.
 
     Here is the informaiton on the article:
 
