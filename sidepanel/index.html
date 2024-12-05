@@ -10,14 +10,6 @@
         <div id="loader" class="pulse"></div>
       </div>
     </div>
-    <div class="input-container">
-      <input
-        id="quiz-input"
-        type="text"
-        placeholder="Type your answer here..."
-      />
-      <button id="submit-button">Submit</button>
-    </div>
       <div id="quiz-container" class="quiz-container">
         <span id="quiz-introduction-default" class="quiz-intro">Ready to test your memory? Generate a quick quiz and see how well you can summarize what you've read</span>
         <div id="loader" class="dots">
@@ -25,9 +17,9 @@
           <span></span>
           <span></span>
         </div>
-        <div class="main-idea-section">
-          <h2>Main Idea</h2>
-          <span id="main-idea-content"></span>
+        <div class="main-takeaway-section">
+          <h2>Main Takeaway</h2>
+          <span id="main-takeaway-content"></span>
         </div>
         <div class="key-details-section">
           <h2>Key Details</h2>
@@ -37,6 +29,14 @@
         </div>
         <button id="reveal-answers" class="reveal-button">Reveal Answers</button>
         <div class="response-feedback" id="response-feedback"></div>
+      </div>
+      <div class="input-container">
+        <input
+          id="quiz-input"
+          type="text"
+          placeholder="Type your answer here..."
+        />
+        <button id="submit-button">Submit</button>
       </div>
     <script src="index.js" type="module"></script>
   </body>

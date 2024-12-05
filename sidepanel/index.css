@@ -211,8 +211,7 @@ h2 {
 }
 
 .key-details-section,
-.main-idea-section,
-.reveal-button,
+.main-takeaway-section,
 .dots {
   opacity: 0; /* Hide content while loading */
   transition: opacity 0.3s ease-in-out;
@@ -228,7 +227,7 @@ h2 {
 }
 
 .quiz-container.loaded .key-details-section,
-.quiz-container.loaded .main-idea-section,
+.quiz-container.loaded .main-takeaway-section,
 .quiz-intro {
   opacity: 1; /* Show content when loaded */
 }
